@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Fintech Premium Ledger | World-Class Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "secondary-fixed": "#dae2fd",
+              "on-primary": "#ffffff",
+              "tertiary-container": "#006e4b",
+              "on-primary-fixed": "#0f0069",
+              "on-primary-container": "#dad7ff",
+              "on-tertiary-fixed": "#002113",
+              "surface-tint": "#4d44e3",
+              "on-secondary-fixed": "#131b2e",
+              "on-surface": "#191c1e",
+              "on-tertiary-container": "#67f4b7",
+              "error": "#ba1a1a",
+              "secondary-fixed-dim": "#bec6e0",
+              "inverse-primary": "#c3c0ff",
+              "on-background": "#191c1e",
+              "on-error-container": "#93000a",
+              "surface": "#F8FAFC",
+              "surface-bright": "#F8FAFC",
+              "primary-fixed-dim": "#c3c0ff",
+              "primary-fixed": "#e2dfff",
+              "inverse-on-surface": "#eff1f3",
+              "outline-variant": "#c7c4d8",
+              "on-tertiary-fixed-variant": "#005236",
+              "tertiary-fixed": "#6ffbbe",
+              "on-secondary-container": "#5c647a",
+              "tertiary-fixed-dim": "#4edea3",
+              "on-secondary": "#ffffff",
+              "on-surface-variant": "#464555",
+              "on-error": "#ffffff",
+              "on-secondary-fixed-variant": "#3f465c",
+              "primary-container": "#4f46e5",
+              "outline": "#777587",
+              "secondary-container": "#dae2fd",
+              "surface-container-lowest": "#ffffff",
+              "surface-container-high": "#e6e8ea",
+              "background": "#F8FAFC",
+              "secondary": "#565e74",
+              "surface-container-low": "#f2f4f6",
+              "surface-dim": "#d8dadc",
+              "primary": "#4f46e5",
+              "inverse-surface": "#2d3133",
+              "error-container": "#ffdad6",
+              "on-primary-fixed-variant": "#3323cc",
+              "surface-container-highest": "#e0e3e5",
+              "surface-variant": "#e0e3e5",
+              "on-tertiary": "#ffffff",
+              "surface-container": "#eceef0",
+              "tertiary": "#005338"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "0.75rem", "xl": "1.25rem", "2xl": "1.5rem", "3xl": "2rem", "full": "9999px"},
+            boxShadow: {
+              'premium': '0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 10px 15px -3px rgba(0, 0, 0, 0.03), 0 20px 25px -5px rgba(0, 0, 0, 0.02)',
+              'premium-hover': '0 25px 50px -12px rgba(79, 70, 229, 0.12)',
+              'inner-soft': 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.03)',
+            }
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .glass-effect {
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        background: rgba(255, 255, 255, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+      }
+      .premium-card {
+        transition: all 0.3s ease-in-out;
+        border: 1px solid rgba(0, 0, 0, 0.04);
+        position: relative;
+      }
+      .premium-card:hover {
+        transform: translateY(-4px) scale(1.01);
+        box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.08);
+      }
+      .mesh-gradient {
+        background: linear-gradient(135deg, #4f46e5 0%, #312e81 100%);
+        position: relative;
+      }
+      .mesh-gradient::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(at 0% 0%, rgba(255,255,255,0.1) 0, transparent 50%),
+                          radial-gradient(at 100% 100%, rgba(0,0,0,0.1) 0, transparent 50%);
+        pointer-events: none;
+      }
+      .sidebar-active-pill {
+        box-shadow: 0 0 15px rgba(79, 70, 229, 0.15);
+      }
+      .progress-fill-animate {
+        animation: progressLoad 1.5s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+        width: 0;
+      }
+      @keyframes progressLoad {
+        to { width: 72%; }
+      }
+      .donut-segment {
+        transition: stroke-width 0.3s ease, transform 0.3s ease;
+        transform-origin: center;
+      }
+      .donut-segment:hover {
+        stroke-width: 38;
+        transform: scale(1.03);
+      }
+      .search-focus:focus-within {
+        box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+      }
+      .transition-standard {
+        transition: all 0.3s ease-in-out;
+      }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-[#F8FAFC] to-[#F1F5F9] font-body text-on-surface antialiased min-h-screen">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-screen w-64 border-r border-slate-200/50 bg-white/60 backdrop-blur-xl flex flex-col py-8 px-6 z-50">
+<div class="mb-12 px-2">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined" data-icon="account_balance" style="font-variation-settings: 'FILL' 1;">account_balance</span>
+</div>
+<div>
+<h1 class="text-xl font-bold tracking-tight text-slate-900 leading-none">Fintech</h1>
+<p class="text-[10px] uppercase tracking-[0.18em] text-slate-400 font-bold mt-1">Premium Ledger</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1.5">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary text-white font-semibold sidebar-active-pill transition-standard" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="grid_view">grid_view</span>
+<span class="text-sm tracking-tight">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-slate-50 transition-standard group" href="#">
+<span class="material-symbols-outlined text-xl group-hover:text-primary" data-icon="swap_horiz">swap_horiz</span>
+<span class="text-sm tracking-tight group-hover:text-slate-900">Transactions</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-slate-50 transition-standard group" href="#">
+<span class="material-symbols-outlined text-xl group-hover:text-primary" data-icon="account_balance">account_balance</span>
+<span class="text-sm tracking-tight group-hover:text-slate-900">Assets</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-slate-50 transition-standard group" href="#">
+<span class="material-symbols-outlined text-xl group-hover:text-primary" data-icon="settings">settings</span>
+<span class="text-sm tracking-tight group-hover:text-slate-900">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-slate-50 transition-standard group" href="#">
+<span class="material-symbols-outlined text-xl group-hover:text-primary" data-icon="contact_support">contact_support</span>
+<span class="text-sm tracking-tight group-hover:text-slate-900">Support</span>
+</a>
+</nav>
+<div class="mt-auto pt-8 border-t border-slate-100">
+<div class="bg-primary/5 rounded-2xl p-5 border border-primary/10 mb-6">
+<div class="flex items-center justify-between mb-4">
+<span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Plan Status</span>
+<span class="flex h-2 w-2 relative">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+</span>
+</div>
+<button class="w-full py-2.5 bg-primary text-white rounded-xl text-sm font-semibold shadow-lg shadow-primary/15 transition-standard hover:shadow-primary/25 active:scale-95">Upgrade Plan</button>
+</div>
+<div class="space-y-1">
+<a class="flex items-center gap-3 px-4 py-2 text-slate-400 hover:text-primary transition-standard" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="admin_panel_settings">admin_panel_settings</span>
+<span class="text-xs font-semibold">Admin Mode</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-400 hover:text-primary transition-standard" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="help">help</span>
+<span class="text-xs font-semibold">Help Center</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 w-[calc(100%-16rem)] h-20 bg-white/70 backdrop-blur-2xl border-b border-slate-200/40 flex justify-between items-center px-12 z-40">
+<div>
+<h2 class="text-2xl font-bold tracking-tight text-slate-900">Overview</h2>
+</div>
+<div class="flex items-center gap-8">
+<div class="relative search-focus transition-standard group">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-xl group-focus-within:text-primary" data-icon="search">search</span>
+<input class="pl-11 pr-5 py-2.5 bg-slate-100/60 border-none rounded-full text-sm focus:ring-0 w-80 transition-standard placeholder:text-slate-400 shadow-inner-soft" placeholder="Search insights or records..." type="text"/>
+</div>
+<button class="relative p-2.5 text-slate-500 hover:text-primary transition-standard bg-slate-100/60 rounded-full hover:bg-slate-100 shadow-inner-soft">
+<span class="material-symbols-outlined text-2xl" data-icon="notifications">notifications</span>
+<span class="absolute top-2.5 right-2.5 w-2.5 h-2.5 bg-error rounded-full border-2 border-white shadow-sm shadow-error/30"></span>
+</button>
+<div class="flex items-center gap-4 pl-6 border-l border-slate-200">
+<div class="text-right">
+<p class="text-sm font-bold text-slate-900">Alexander Hunt</p>
+<p class="text-[10px] text-primary font-extrabold uppercase tracking-widest">Premium Tier</p>
+</div>
+<div class="relative group">
+<img alt="User" class="w-11 h-11 rounded-full object-cover ring-2 ring-white shadow-md transition-standard group-hover:shadow-primary/20" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBhTarRJSd86cCR7YQ5qhwJPnuP0Hg8-YKgwnCFEoJ8yaiWp0_J93vDTnGoe9-6e3zDQWrp44ClymPR0i3YoJoMJi-mOeFnPUiRwwfRRYrMjArKOrHp8LlXcsQkJZkjWch4pKTJO6lcbXEuNkwTQzhKjOGpxaJHTTC9PmNXlctg07rZcOE5c8oH9fRc_zQbOUcnLhoZQEt3TmynhWnHNVD5uTFrwVamzKDX7_Cq5iBzqkUQjY8TxdadSMDdQQ9K6hljfelk8lMLqOk"/>
+<div class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-tertiary-fixed-dim rounded-full border-2 border-white"></div>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="ml-64 pt-32 px-12 pb-20 min-h-screen">
+<!-- Hero Stats Grid -->
+<section class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-12">
+<!-- Main Card -->
+<div class="lg:col-span-2 mesh-gradient p-10 rounded-3xl shadow-xl relative overflow-hidden group transition-standard premium-card border-none">
+<div class="absolute -right-16 -top-16 w-64 h-64 bg-white/5 rounded-full blur-3xl transition-all duration-700 group-hover:bg-white/10 group-hover:scale-110"></div>
+<div class="relative z-10 flex flex-col h-full justify-between">
+<div>
+<div class="flex items-center justify-between mb-8">
+<span class="uppercase tracking-[0.2em] text-white/60 font-bold text-[10px]">Total Available Balance</span>
+<div class="px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-white text-[11px] font-bold flex items-center gap-1.5 border border-white/10">
+<span class="material-symbols-outlined text-[14px]" data-icon="trending_up">trending_up</span>
+                            +14.2%
+                        </div>
+</div>
+<div class="flex items-baseline gap-1 mb-8">
+<span class="text-6xl font-extrabold tracking-tighter text-white drop-shadow-sm">₹4,28,500</span>
+<span class="text-white/40 text-xl font-medium">.00</span>
+</div>
+</div>
+<div class="space-y-4">
+<div class="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-white/70">
+<span>Savings Milestone</span>
+<span>72% of ₹6,00,000 goal</span>
+</div>
+<div class="h-2.5 w-full bg-white/10 rounded-full overflow-hidden border border-white/5">
+<div class="h-full bg-gradient-to-r from-white to-indigo-100 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.4)] progress-fill-animate"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Total Income -->
+<div class="bg-white p-8 rounded-3xl shadow-premium transition-standard premium-card flex flex-col justify-between">
+<div class="flex items-center justify-between mb-8">
+<div class="w-12 h-12 rounded-2xl bg-tertiary/5 flex items-center justify-center text-tertiary ring-1 ring-tertiary/10">
+<span class="material-symbols-outlined text-2xl" data-icon="arrow_downward">arrow_downward</span>
+</div>
+<span class="text-tertiary text-[10px] font-bold px-2 py-1 bg-tertiary/10 rounded-lg">+₹12.4k today</span>
+</div>
+<div>
+<p class="uppercase tracking-widest text-slate-400 font-bold text-[10px] mb-2">Monthly Income</p>
+<h3 class="text-4xl font-extrabold tracking-tight text-slate-900">₹84,200</h3>
+</div>
+<div class="mt-8 border-t border-slate-100 pt-5 flex justify-between items-center">
+<span class="text-[11px] text-slate-400 font-bold uppercase tracking-tighter">Budget Avg</span>
+<span class="text-sm font-bold text-slate-900">₹72,000</span>
+</div>
+</div>
+<!-- Total Expenses -->
+<div class="bg-white p-8 rounded-3xl shadow-premium transition-standard premium-card flex flex-col justify-between">
+<div class="flex items-center justify-between mb-8">
+<div class="w-12 h-12 rounded-2xl bg-error/5 flex items-center justify-center text-error ring-1 ring-error/10">
+<span class="material-symbols-outlined text-2xl" data-icon="arrow_upward">arrow_upward</span>
+</div>
+<span class="text-error text-[10px] font-bold px-2 py-1 bg-error/10 rounded-lg">2.4% vs budget</span>
+</div>
+<div>
+<p class="uppercase tracking-widest text-slate-400 font-bold text-[10px] mb-2">Monthly Spend</p>
+<h3 class="text-4xl font-extrabold tracking-tight text-slate-900">₹32,150</h3>
+</div>
+<div class="mt-8 border-t border-slate-100 pt-5 flex justify-between items-center">
+<span class="text-[11px] text-slate-400 font-bold uppercase tracking-tighter">Prev. Month</span>
+<span class="text-sm font-bold text-slate-900">₹28,400</span>
+</div>
+</div>
+</section>
+<!-- Charts Bento Grid -->
+<section class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
+<!-- Balance Trend Chart -->
+<div class="lg:col-span-2 bg-white p-10 rounded-3xl shadow-premium premium-card">
+<div class="flex justify-between items-center mb-10">
+<div>
+<h4 class="text-xl font-bold text-slate-900">Wealth Trajectory</h4>
+<p class="text-sm text-slate-400 mt-1">Growth overview over the last 30 days</p>
+</div>
+<div class="flex bg-slate-50 p-1 rounded-xl border border-slate-100">
+<button class="px-4 py-1.5 text-xs font-bold rounded-lg transition-standard bg-white shadow-sm text-primary">30D</button>
+<button class="px-4 py-1.5 text-xs font-bold rounded-lg transition-standard text-slate-500 hover:text-slate-900">6M</button>
+<button class="px-4 py-1.5 text-xs font-bold rounded-lg transition-standard text-slate-500 hover:text-slate-900">1Y</button>
+</div>
+</div>
+<div class="relative h-[300px] w-full">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 800 300">
+<defs>
+<lineargradient id="chartGradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#4f46e5" stop-opacity="0.1"></stop>
+<stop offset="100%" stop-color="#4f46e5" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<line stroke="#f8fafc" stroke-width="1" x1="0" x2="800" y1="50" y2="50"></line>
+<line stroke="#f8fafc" stroke-width="1" x1="0" x2="800" y1="150" y2="150"></line>
+<line stroke="#f8fafc" stroke-width="1" x1="0" x2="800" y1="250" y2="250"></line>
+<!-- Gradient Area -->
+<path d="M0,280 C 100,260 150,200 200,180 S 350,150 400,120 S 550,80 600,60 S 750,30 800,20 L 800,300 L 0,300 Z" fill="url(#chartGradient)"></path>
+<!-- Spline Path -->
+<path d="M0,280 C 100,260 150,200 200,180 S 350,150 400,120 S 550,80 600,60 S 750,30 800,20" fill="none" stroke="#4f46e5" stroke-linecap="round" stroke-width="3"></path>
+<circle class="shadow-lg" cx="400" cy="120" fill="#4f46e5" r="6" stroke="white" stroke-width="3"></circle>
+</svg>
+<!-- Refined Glass Tooltip -->
+<div class="absolute top-[70px] left-[420px] glass-effect p-4 rounded-2xl shadow-xl z-10 border border-white/50">
+<p class="text-[10px] font-black text-primary uppercase tracking-widest mb-1">May 14, 2024</p>
+<p class="text-base font-extrabold text-slate-900">₹3,94,200.00</p>
+<div class="flex items-center gap-1 mt-1.5">
+<span class="material-symbols-outlined text-[12px] text-tertiary" data-icon="trending_up">trending_up</span>
+<p class="text-[10px] text-tertiary font-bold">+2.4% vs last week</p>
+</div>
+</div>
+</div>
+<div class="flex justify-between mt-8 px-2">
+<span class="text-[10px] font-bold text-slate-300 uppercase tracking-[0.2em]">01 May</span>
+<span class="text-[10px] font-bold text-slate-300 uppercase tracking-[0.2em]">14 May</span>
+<span class="text-[10px] font-bold text-slate-300 uppercase tracking-[0.2em]">28 May</span>
+</div>
+</div>
+<!-- Spending Donut -->
+<div class="bg-white p-10 rounded-3xl shadow-premium premium-card flex flex-col items-center">
+<h4 class="text-xl font-bold text-slate-900 w-full mb-10 text-left">Spending by Category</h4>
+<div class="relative flex-1 flex items-center justify-center">
+<svg class="w-52 h-52 transform -rotate-90">
+<circle cx="104" cy="104" fill="none" r="80" stroke="#f1f5f9" stroke-width="24"></circle>
+<!-- Shopping 45% -->
+<circle class="donut-segment cursor-pointer" cx="104" cy="104" fill="none" r="80" stroke="#4f46e5" stroke-dasharray="502" stroke-dashoffset="276" stroke-linecap="round" stroke-width="24"></circle>
+<!-- Bills 30% -->
+<circle class="donut-segment cursor-pointer" cx="104" cy="104" fill="none" r="80" stroke="#005338" stroke-dasharray="502" stroke-dashoffset="400" stroke-linecap="round" stroke-width="24"></circle>
+<!-- Travel 15% -->
+<circle class="donut-segment cursor-pointer" cx="104" cy="104" fill="none" r="80" stroke="#ba1a1a" stroke-dasharray="502" stroke-dashoffset="460" stroke-linecap="round" stroke-width="24"></circle>
+</svg>
+<div class="absolute text-center">
+<p class="text-3xl font-extrabold text-slate-900">₹32k</p>
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Total Out</p>
+</div>
+</div>
+<div class="w-full mt-12 space-y-4">
+<div class="flex items-center justify-between group transition-standard">
+<div class="flex items-center gap-3">
+<div class="w-3 h-3 rounded-full bg-primary shadow-sm shadow-primary/30"></div>
+<span class="text-sm font-semibold text-slate-600">Shopping</span>
+</div>
+<span class="text-sm font-bold text-slate-900">45%</span>
+</div>
+<div class="flex items-center justify-between group transition-standard">
+<div class="flex items-center gap-3">
+<div class="w-3 h-3 rounded-full bg-tertiary shadow-sm shadow-tertiary/30"></div>
+<span class="text-sm font-semibold text-slate-600">Bills &amp; Rent</span>
+</div>
+<span class="text-sm font-bold text-slate-900">30%</span>
+</div>
+<div class="flex items-center justify-between group transition-standard">
+<div class="flex items-center gap-3">
+<div class="w-3 h-3 rounded-full bg-error shadow-sm shadow-error/30"></div>
+<span class="text-sm font-semibold text-slate-600">Travel</span>
+</div>
+<span class="text-sm font-bold text-slate-900">15%</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Bottom Section: Insights & Transactions -->
+<section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- AI Insights -->
+<div class="bg-white p-10 rounded-3xl shadow-premium premium-card flex flex-col">
+<div class="flex items-center gap-3 mb-12">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="auto_awesome" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+</div>
+<h4 class="text-xl font-bold text-slate-900">Smart Insights</h4>
+</div>
+<div class="space-y-10 flex-1 px-1">
+<div class="flex gap-5 group">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-indigo-50 flex items-center justify-center text-primary border border-indigo-100/50 group-hover:bg-indigo-100 transition-standard">
+<span class="material-symbols-outlined text-xl" data-icon="restaurant">restaurant</span>
+</div>
+<div>
+<p class="text-base font-bold text-slate-900">Spending Spike</p>
+<p class="text-sm text-slate-400 mt-1.5 leading-relaxed">Your dining expenses are <span class="font-bold text-slate-600">15% higher</span> than your 3-month average.</p>
+</div>
+</div>
+<div class="flex gap-5 group">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-red-50 flex items-center justify-center text-error border border-red-100/50 group-hover:bg-red-100 transition-standard">
+<span class="material-symbols-outlined text-xl" data-icon="electric_bolt">electric_bolt</span>
+</div>
+<div>
+<p class="text-base font-bold text-slate-900">Subscription Alert</p>
+<p class="text-sm text-slate-400 mt-1.5 leading-relaxed">Unused <span class="font-bold text-slate-600">Adobe Creative</span> billing detected. Cancel to save ₹2,400.</p>
+</div>
+</div>
+<div class="flex gap-5 group">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center text-tertiary border border-emerald-100/50 group-hover:bg-emerald-100 transition-standard">
+<span class="material-symbols-outlined text-xl" data-icon="savings">savings</span>
+</div>
+<div>
+<p class="text-base font-bold text-slate-900">Efficiency Reward</p>
+<p class="text-sm text-slate-400 mt-1.5 leading-relaxed">You've hit your weekly goal! We recommend a <span class="font-bold text-slate-600">₹5,000 auto-invest</span>.</p>
+</div>
+</div>
+</div>
+<button class="mt-12 py-4 w-full bg-slate-50 text-primary text-[11px] font-bold uppercase tracking-[0.2em] rounded-2xl hover:bg-primary hover:text-white transition-standard border border-slate-100 hover:border-transparent active:scale-95">Analyze All Habits</button>
+</div>
+<!-- Recent Transactions -->
+<div class="lg:col-span-2 bg-white rounded-3xl shadow-premium premium-card flex flex-col overflow-hidden">
+<div class="p-10 pb-6 flex justify-between items-center">
+<div>
+<h4 class="text-xl font-bold text-slate-900">Recent Activity</h4>
+<p class="text-sm text-slate-400 mt-1">Real-time status of your financial flows</p>
+</div>
+<button class="px-6 py-2.5 text-xs font-bold text-primary hover:bg-primary hover:text-white border border-primary/20 rounded-xl transition-standard active:scale-95">Export CSV</button>
+</div>
+<div class="flex-1 overflow-x-auto px-6 pb-6">
+<table class="w-full text-left">
+<thead>
+<tr class="border-b border-slate-50">
+<th class="px-6 py-5 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Account &amp; Type</th>
+<th class="px-6 py-5 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] text-center">Date</th>
+<th class="px-6 py-5 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] text-right">Amount</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-50/50">
+<tr class="group hover:bg-slate-50/70 transition-standard cursor-pointer">
+<td class="px-6 py-6">
+<div class="flex items-center gap-4">
+<div class="w-11 h-11 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500 group-hover:bg-white group-hover:shadow-md transition-standard">
+<span class="material-symbols-outlined" data-icon="laptop_mac">laptop_mac</span>
+</div>
+<div>
+<p class="text-sm font-bold text-slate-900">Apple Store</p>
+<p class="text-[11px] text-slate-400 font-medium">Electronics • MacBook M3 Pro</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-6 text-sm text-slate-500 font-semibold text-center">14 May, 2024</td>
+<td class="px-6 py-6 text-sm font-extrabold text-red-500 text-right">-₹1,24,900</td>
+</tr>
+<tr class="group hover:bg-slate-50/70 transition-standard cursor-pointer">
+<td class="px-6 py-6">
+<div class="flex items-center gap-4">
+<div class="w-11 h-11 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600 group-hover:bg-white group-hover:shadow-md transition-standard">
+<span class="material-symbols-outlined" data-icon="wallet">wallet</span>
+</div>
+<div>
+<p class="text-sm font-bold text-slate-900">Acme Corp Inc.</p>
+<p class="text-[11px] text-slate-400 font-medium">Salary • Performance Bonus</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-6 text-sm text-slate-500 font-semibold text-center">12 May, 2024</td>
+<td class="px-6 py-6 text-sm font-extrabold text-emerald-500 text-right">+₹82,000</td>
+</tr>
+<tr class="group hover:bg-slate-50/70 transition-standard cursor-pointer">
+<td class="px-6 py-6">
+<div class="flex items-center gap-4">
+<div class="w-11 h-11 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500 group-hover:bg-white group-hover:shadow-md transition-standard">
+<span class="material-symbols-outlined" data-icon="bolt">bolt</span>
+</div>
+<div>
+<p class="text-sm font-bold text-slate-900">Tata Power</p>
+<p class="text-[11px] text-slate-400 font-medium">Utility • Home Electricity</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-6 text-sm text-slate-500 font-semibold text-center">10 May, 2024</td>
+<td class="px-6 py-6 text-sm font-extrabold text-red-500 text-right">-₹4,250</td>
+</tr>
+<tr class="group hover:bg-slate-50/70 transition-standard cursor-pointer">
+<td class="px-6 py-6">
+<div class="flex items-center gap-4">
+<div class="w-11 h-11 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500 group-hover:bg-white group-hover:shadow-md transition-standard">
+<span class="material-symbols-outlined" data-icon="flight_takeoff">flight_takeoff</span>
+</div>
+<div>
+<p class="text-sm font-bold text-slate-900">Indigo Airways</p>
+<p class="text-[11px] text-slate-400 font-medium">Travel • BOM-DXB Route</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-6 text-sm text-slate-500 font-semibold text-center">08 May, 2024</td>
+<td class="px-6 py-6 text-sm font-extrabold text-red-500 text-right">-₹12,400</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+</main>
+</body></html>
