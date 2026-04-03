@@ -1,25 +1,39 @@
 import React, { useState } from 'react';
 import { useTransactions } from '../context/TransactionsContext';
+import { Button } from './ui/Button';
+import { Input } from './ui/Input';
 
-const TransactionModal = ({ isOpen, onClose }) => {
+const TransactionModal = ({ isOpen, onClose, onSuccess }) => {
   const { addTransaction } = useTransactions();
   
   const [amount, setAmount] = useState('');
   const [categoryName, setCategoryName] = useState('Electronics');
-  const [date, setDate] = useState('2024-05-14');
+  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [type, setType] = useState('Expense');
+  const [error, setError] = useState(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!amount) return;
+    setError(null);
+    
+    if (!amount || Number(amount) <= 0) {
+      setError("Please enter a valid amount greater than 0.");
+      return;
+    }
+    
+    if (Number(amount) > 1000000000) {
+      setError("Amount exceeds maximum safe limit.");
+      return;
+    }
 
-    addTransaction({ amount, categoryName, date, type });
+    addTransaction({ amount: Number(amount), categoryName, date, type });
+    if (onSuccess) onSuccess();
     onClose();
     
     // Reset defaults for next time
     setAmount('');
     setCategoryName('Electronics');
-    setDate('2024-05-14');
+    setDate(new Date().toISOString().split('T')[0]);
     setType('Expense');
   };
 
@@ -43,21 +57,23 @@ const TransactionModal = ({ isOpen, onClose }) => {
             </button>
           </div>
           
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            <div>
-              <label className="block text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-2">Amount</label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-primary/60 text-lg">₹</span>
-                <input 
-                  className="w-full pl-10 pr-4 py-4 bg-surface-container-low border border-slate-200/20 rounded-2xl text-xl font-bold focus:ring-4 focus:ring-primary/10 focus:border-primary/20 focus:bg-white transition-all duration-200 shadow-inner placeholder:text-slate-300" 
-                  placeholder="0.00" 
-                  type="number"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  required
-                />
-              </div>
+          {error && (
+            <div className="bg-error/10 text-error px-4 py-3 rounded-xl text-sm font-bold flex items-center gap-2 mb-4 transition-all">
+              <span className="material-symbols-outlined text-[18px]">error</span>
+              {error}
             </div>
+          )}
+          
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            <Input 
+              label="Amount"
+              icon={<span className="text-primary/60 text-lg">₹</span>}
+              placeholder="0.00" 
+              type="number"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              required
+            />
             
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -74,15 +90,13 @@ const TransactionModal = ({ isOpen, onClose }) => {
                   <option value="Dining">Dining</option>
                 </select>
               </div>
-              <div>
-                <label className="block text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-2">Date</label>
-                <input 
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  className="w-full px-4 py-4 bg-surface-container-low border border-slate-200/20 rounded-2xl text-sm font-medium focus:ring-4 focus:ring-primary/10 focus:border-primary/20 focus:bg-white transition-all duration-200 shadow-inner" 
-                  type="date" 
-                />
-              </div>
+              <Input 
+                label="Date"
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                required
+              />
             </div>
             
             <div>
@@ -94,19 +108,8 @@ const TransactionModal = ({ isOpen, onClose }) => {
             </div>
             
             <div className="flex gap-4 pt-4 pb-4">
-              <button 
-                onClick={onClose} 
-                className="flex-1 py-4 px-6 rounded-2xl font-bold text-slate-500 hover:text-slate-800 hover:bg-slate-100/80 transition-all duration-200" 
-                type="button"
-              >
-                Cancel
-              </button>
-              <button 
-                className="flex-1 py-4 px-6 rounded-2xl font-bold bg-gradient-to-r from-primary to-primary-container text-white shadow-xl shadow-primary/30 hover:scale-[1.03] active:scale-[0.97] transition-all duration-200" 
-                type="submit"
-              >
-                Save Ledger Entry
-              </button>
+              <Button variant="ghost" onClick={onClose} fullWidth>Cancel</Button>
+              <Button type="submit" fullWidth>Save Ledger Entry</Button>
             </div>
           </form>
         </div>

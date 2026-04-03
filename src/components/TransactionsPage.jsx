@@ -8,6 +8,12 @@ import { useTransactions } from '../context/TransactionsContext';
 
 const TransactionsPage = ({ setCurrentPage, currentPage }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState(null);
+  
+  const showToast = (msg) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3000);
+  };
   
   // State for filtering and sorting
   const [searchQuery, setSearchQuery] = useState('');
@@ -41,18 +47,7 @@ const TransactionsPage = ({ setCurrentPage, currentPage }) => {
       if (sortConfig === 'Date (Newest)') {
         return new Date(b.date) - new Date(a.date);
       } else if (sortConfig === 'Amount (High to Low)' || sortConfig === 'Amount (Low to High)') {
-        // Extract raw numerical amount by stripping generic currency symbols and commas. 
-        // We evaluate pure numeric values (so Income is High, Expense is Low)
-        const parseAmt = (str) => {
-          // Remove commas and currency signs, leave minus strings intact
-          const cleanString = str.replace(/[^\d.-]/g, '');
-          return parseFloat(cleanString);
-        };
-        
-        const valA = parseAmt(a.amount);
-        const valB = parseAmt(b.amount);
-        
-        return sortConfig === 'Amount (High to Low)' ? valB - valA : valA - valB;
+        return sortConfig === 'Amount (High to Low)' ? b.amount - a.amount : a.amount - b.amount;
       }
       return 0;
     });
@@ -119,7 +114,19 @@ const TransactionsPage = ({ setCurrentPage, currentPage }) => {
         </section>
       </main>
       
-      <TransactionModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <TransactionModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        onSuccess={() => showToast('Ledger entry saved successfully!')} 
+      />
+
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed bottom-8 right-8 bg-slate-900 border border-slate-700 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 transition-standard z-50 slide-up-animation">
+          <span className="material-symbols-outlined text-emerald-400">check_circle</span>
+          <span className="font-semibold text-sm tracking-wide">{toastMessage}</span>
+        </div>
+      )}
     </>
   );
 };
