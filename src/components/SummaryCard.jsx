@@ -1,14 +1,15 @@
 import React from 'react';
 import { dashboardData } from '../data/mockData';
 import { useTransactions } from '../context/TransactionsContext';
+import { Card } from './ui/Card';
 
 const SummaryCards = () => {
   const { transactions } = useTransactions();
   const { balance, income, spend } = dashboardData.metrics;
 
   // Calculate dynamic data based on historical mock scale
-  const rawIncome = transactions.reduce((acc, tx) => tx.type === 'Income' ? acc + parseFloat(tx.amount.replace(/[^\d.-]/g, '')) : acc, 0);
-  const rawSpend = transactions.reduce((acc, tx) => tx.type === 'Expense' ? acc + parseFloat(tx.amount.replace(/[^\d.-]/g, '')) : acc, 0);
+  const rawIncome = transactions.reduce((acc, tx) => tx.type === 'Income' ? acc + tx.amount : acc, 0);
+  const rawSpend = transactions.reduce((acc, tx) => tx.type === 'Expense' ? acc + tx.amount : acc, 0);
   
   // Create a base balance to represent history not visibly shown in the recent list
   const baseBalance = 1322500; 
@@ -58,7 +59,7 @@ const SummaryCards = () => {
       </div>
 
       {/* Total Income */}
-      <div className="bg-white p-8 rounded-3xl shadow-premium transition-standard premium-card flex flex-col justify-between">
+      <Card>
         <div className="flex items-center justify-between mb-8">
           <div className="w-12 h-12 rounded-2xl bg-tertiary/5 flex items-center justify-center text-tertiary ring-1 ring-tertiary/10">
             <span className="material-symbols-outlined text-2xl">arrow_downward</span>
@@ -79,10 +80,10 @@ const SummaryCards = () => {
           <span className="text-[11px] text-slate-400 font-bold uppercase tracking-tighter">Budget Avg</span>
           <span className="text-sm font-bold text-slate-900">{income.budgetAvg}</span>
         </div>
-      </div>
+      </Card>
 
       {/* Total Expenses */}
-      <div className="bg-white p-8 rounded-3xl shadow-premium transition-standard premium-card flex flex-col justify-between">
+      <Card>
         <div className="flex items-center justify-between mb-8">
           <div className="w-12 h-12 rounded-2xl bg-error/5 flex items-center justify-center text-error ring-1 ring-error/10">
             <span className="material-symbols-outlined text-2xl">arrow_upward</span>
@@ -103,7 +104,7 @@ const SummaryCards = () => {
           <span className="text-[11px] text-slate-400 font-bold uppercase tracking-tighter">Prev. Month</span>
           <span className="text-sm font-bold text-slate-900">{spend.prevMonth}</span>
         </div>
-      </div>
+      </Card>
     </section>
   );
 };

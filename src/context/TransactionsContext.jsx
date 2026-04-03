@@ -34,8 +34,8 @@ export const TransactionsProvider = ({ children }) => {
       categoryName: newTx.categoryName,
       merchant: "Manual Entry",
       subCategory: newTx.categoryName,
-      date: ReactDateFormat(newTx.date),
-      amount: `${newTx.type === 'Income' ? '+' : '-'}₹${newTx.amount.toLocaleString()}`,
+      date: newTx.date,
+      amount: Number(newTx.amount),
       type: newTx.type,
       icon,
       iconBg,
@@ -58,11 +58,3 @@ export const TransactionsProvider = ({ children }) => {
 };
 
 export const useTransactions = () => useContext(TransactionsContext);
-
-// Extremely simple date formatter for mock consistency
-function ReactDateFormat(dateString) {
-  if (!dateString) return "Just now";
-  const dateObj = new Date(dateString);
-  const options = { month: 'short', day: 'numeric', year: 'numeric' };
-  return dateObj.toLocaleDateString('en-US', options).replace(',', ',');
-}

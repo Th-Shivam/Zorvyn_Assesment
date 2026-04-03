@@ -13,6 +13,8 @@ import {
 import { Line, Doughnut } from 'react-chartjs-2';
 import { dashboardData } from '../data/mockData';
 import { useTransactions } from '../context/TransactionsContext';
+import { Card } from './ui/Card';
+import { Button } from './ui/Button';
 
 ChartJS.register(
   CategoryScale,
@@ -31,11 +33,11 @@ const ChartsSection = () => {
 
   // Dynamically calculate spending by category for the Doughnut Chart
   const expenseTransactions = transactions.filter(tx => tx.type === 'Expense');
-  const totalExpense = expenseTransactions.reduce((acc, tx) => acc + parseFloat(tx.amount.replace(/[^\d.-]/g, '')), 0);
+  const totalExpense = expenseTransactions.reduce((acc, tx) => acc + tx.amount, 0);
   
   const categorySums = {};
   expenseTransactions.forEach(tx => {
-    const val = parseFloat(tx.amount.replace(/[^\d.-]/g, ''));
+    const val = tx.amount;
     categorySums[tx.categoryName] = (categorySums[tx.categoryName] || 0) + val;
   });
 
@@ -149,22 +151,22 @@ const ChartsSection = () => {
   return (
     <section className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
       {/* Balance Trend Chart */}
-      <div className="lg:col-span-2 bg-white p-10 rounded-3xl shadow-premium premium-card flex flex-col">
+      <Card className="lg:col-span-2 !p-10">
         <div className="flex justify-between items-center mb-10">
           <div>
             <h4 className="text-xl font-bold text-slate-900">Wealth Trajectory</h4>
             <p className="text-sm text-slate-400 mt-1">Growth overview over the last 30 days</p>
           </div>
           <div className="flex bg-slate-50 p-1 rounded-xl border border-slate-100">
-            <button className="px-4 py-1.5 text-xs font-bold rounded-lg transition-standard bg-white shadow-sm text-primary">
+            <Button size="sm" className="bg-white shadow-sm !text-primary hover:!text-primary">
               30D
-            </button>
-            <button className="px-4 py-1.5 text-xs font-bold rounded-lg transition-standard text-slate-500 hover:text-slate-900">
+            </Button>
+            <Button size="sm" variant="ghost">
               6M
-            </button>
-            <button className="px-4 py-1.5 text-xs font-bold rounded-lg transition-standard text-slate-500 hover:text-slate-900">
+            </Button>
+            <Button size="sm" variant="ghost">
               1Y
-            </button>
+            </Button>
           </div>
         </div>
         
@@ -181,10 +183,10 @@ const ChartsSection = () => {
             </span>
           ))}
         </div>
-      </div>
+      </Card>
 
       {/* Spending Donut */}
-      <div className="bg-white p-10 rounded-3xl shadow-premium premium-card flex flex-col items-center">
+      <Card className="!p-10 items-center">
         <h4 className="text-xl font-bold text-slate-900 w-full mb-10 text-left">Spending by Category</h4>
         <div className="relative flex-1 w-full flex items-center justify-center min-h-[200px]">
           <div className="w-52 h-52 absolute">
@@ -199,8 +201,8 @@ const ChartsSection = () => {
         </div>
         
         <div className="w-full mt-12 space-y-4">
-          {dynamicCategories.length > 0 ? dynamicCategories.map((cat, index) => (
-            <div key={index} className="flex items-center justify-between group transition-standard">
+          {dynamicCategories.length > 0 ? dynamicCategories.map((cat) => (
+            <div key={cat.name} className="flex items-center justify-between group transition-standard">
               <div className="flex items-center gap-3">
                 <div 
                   className="w-3 h-3 rounded-full shadow-sm"
@@ -214,7 +216,7 @@ const ChartsSection = () => {
             <p className="text-center text-sm text-slate-400 py-4 font-medium">No expenses recorded.</p>
           )}
         </div>
-      </div>
+      </Card>
     </section>
   );
 };

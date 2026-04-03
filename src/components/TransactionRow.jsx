@@ -16,21 +16,23 @@ const TransactionRow = ({ tx }) => {
         </div>
         {/* Mobile Amount */}
         <span className={`md:hidden font-bold ${tx.type === 'Income' ? 'text-tertiary' : 'text-error'}`}>
-          {tx.amount}
+          {tx.type === 'Income' ? '+' : '-'}₹{tx.amount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
         </span>
       </td>
       
-      <td className="px-6 md:px-8 py-2 md:py-6 flex flex-col md:table-cell ml-14 md:ml-0">
-        <span className="text-sm font-medium text-on-surface">{tx.merchant}</span>
-        <span className="text-xs text-slate-400">{tx.subCategory}</span>
+      <td className="px-6 md:px-8 py-4 md:py-6 text-right md:text-left flex justify-between md:table-cell order-3 md:order-none col-span-2">
+        <span className="md:hidden text-[11px] font-bold uppercase tracking-widest text-slate-400">Amount</span>
+        <span className={`font-extrabold tracking-tight text-lg ${tx.type === 'Income' ? 'text-emerald-600' : 'text-slate-900'}`}>
+          {tx.type === 'Income' ? '+' : '-'}₹{tx.amount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+        </span>
       </td>
       
       <td className="px-6 md:px-8 py-2 md:py-6 text-sm text-on-secondary-container font-medium hidden md:table-cell">
-        {tx.date}
+        {new Date(tx.date + 'T12:00:00').toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' })}
       </td>
       
       <td className={`px-6 md:px-8 py-2 md:py-6 font-bold hidden md:table-cell ${tx.type === 'Income' ? 'text-tertiary' : 'text-error'}`}>
-        {tx.amount}
+        {tx.type === 'Income' ? '+' : '-'}₹{tx.amount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
       </td>
       
       <td className="px-6 md:px-8 py-2 md:py-6 hidden md:table-cell">

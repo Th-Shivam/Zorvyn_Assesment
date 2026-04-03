@@ -1,5 +1,6 @@
 import React from 'react';
 import { useRole } from '../context/RoleContext';
+import { Button } from './ui/Button';
 
 const TransactionsHeader = ({ 
   onAddClick, 
@@ -17,13 +18,10 @@ const TransactionsHeader = ({
           <p className="text-on-secondary-container font-medium">Track, filter, and manage your financial activity {role === 'viewer' && <span className="ml-2 text-primary font-bold text-xs bg-primary/10 px-2 py-0.5 rounded-full uppercase tracking-widest">Viewer Mode</span>}</p>
         </div>
         {role === 'admin' && (
-          <button 
-            onClick={onAddClick}
-            className="flex items-center gap-2 px-6 py-3.5 bg-gradient-to-r from-primary to-primary-container text-white rounded-xl font-semibold shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 active:scale-95 transition-all duration-200"
-          >
+          <Button onClick={onAddClick} size="md">
             <span className="material-symbols-outlined text-[20px]">add</span>
             Add Entry
-          </button>
+          </Button>
         )}
       </section>
 
