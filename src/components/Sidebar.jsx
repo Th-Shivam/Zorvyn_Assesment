@@ -1,14 +1,15 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const Sidebar = ({ setCurrentPage, currentPage = 'Overview' }) => {
   return (
-    <aside className="fixed left-0 top-0 h-full w-64 z-50 bg-slate-50 dark:bg-slate-950 flex flex-col py-8 px-4 h-full border-r border-slate-100 dark:border-slate-800">
+    <aside className="hidden md:flex fixed left-0 top-0 h-full w-64 z-50 bg-slate-50 dark:bg-slate-950 flex-col py-8 px-4 border-r border-slate-100 dark:border-slate-800">
       <div className="flex items-center gap-3 px-2 mb-10">
-        <div className="w-10 h-10 bg-primary-container rounded-xl flex items-center justify-center text-white shadow-lg">
-          <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>account_balance_wallet</span>
+        <div className="min-w-[2.5rem] h-10 px-3 bg-primary-container rounded-xl flex items-center justify-center text-white shadow-lg">
+          <span className="text-sm font-black uppercase tracking-[0.2em]">ZORVYN</span>
         </div>
         <div>
-          <h1 className="text-lg font-black text-indigo-700 dark:text-indigo-400 leading-none">Lumina Ledger</h1>
+          <h1 className="text-lg font-black text-indigo-700 dark:text-indigo-400 leading-none">ZORVYN</h1>
           <p className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 tracking-widest uppercase mt-1">Premium Tier</p>
         </div>
       </div>
@@ -21,7 +22,7 @@ const Sidebar = ({ setCurrentPage, currentPage = 'Overview' }) => {
               : 'text-slate-500 dark:text-slate-400 hover:bg-slate-200/30 dark:hover:bg-slate-800/30'
           }`}
         >
-          <span className="material-symbols-outlined" style={currentPage === 'Overview' ? { fontVariationSettings: "'FILL' 1" } : {}}>dashboard</span>
+          <span className={`material-symbols-outlined ${currentPage === 'Overview' ? 'icon-filled' : ''}`}>dashboard</span>
           Overview
         </button>
         <button 
@@ -32,7 +33,7 @@ const Sidebar = ({ setCurrentPage, currentPage = 'Overview' }) => {
               : 'text-slate-500 dark:text-slate-400 hover:bg-slate-200/30 dark:hover:bg-slate-800/30'
           }`}
         >
-          <span className="material-symbols-outlined" style={currentPage === 'Transactions' ? { fontVariationSettings: "'FILL' 1" } : {}}>receipt_long</span>
+          <span className={`material-symbols-outlined ${currentPage === 'Transactions' ? 'icon-filled' : ''}`}>receipt_long</span>
           Transactions
         </button>
         <button className="w-full flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:bg-slate-200/30 dark:hover:bg-slate-800/30 transition-colors rounded-xl text-sm font-medium Inter">
@@ -60,6 +61,11 @@ const Sidebar = ({ setCurrentPage, currentPage = 'Overview' }) => {
       </div>
     </aside>
   );
+};
+
+Sidebar.propTypes = {
+  setCurrentPage: PropTypes.func.isRequired,
+  currentPage: PropTypes.string.isRequired,
 };
 
 export default Sidebar;

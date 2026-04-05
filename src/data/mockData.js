@@ -1,6 +1,6 @@
 export const dashboardData = {
   user: {
-    name: "Alexander Hunt",
+    name: "Shivam Singh",
     tier: "Premium Tier",
     avatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuBhTarRJSd86cCR7YQ5qhwJPnuP0Hg8-YKgwnCFEoJ8yaiWp0_J93vDTnGoe9-6e3zDQWrp44ClymPR0i3YoJoMJi-mOeFnPUiRwwfRRYrMjArKOrHp8LlXcsQkJZkjWch4pKTJO6lcbXEuNkwTQzhKjOGpxaJHTTC9PmNXlctg07rZcOE5c8oH9fRc_zQbOUcnLhoZQEt3TmynhWnHNVD5uTFrwVamzKDX7_Cq5iBzqkUQjY8TxdadSMDdQQ9K6hljfelk8lMLqOk"
   },
