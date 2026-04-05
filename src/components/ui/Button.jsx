@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 // Using tailwind-merge or standard template literals to allow class overrides
 // Since tailwind-merge isn't guaranteed to be installed, we use standard combination logic.
@@ -34,4 +35,13 @@ export const Button = ({
       {children}
     </button>
   );
+};
+
+Button.propTypes = {
+  children: PropTypes.node.isRequired,
+  variant: PropTypes.oneOf(['primary', 'ghost', 'outline', 'secondary']),
+  size: PropTypes.oneOf(['sm', 'md', 'lg']),
+  className: PropTypes.string,
+  fullWidth: PropTypes.bool,
+  type: PropTypes.string,
 };

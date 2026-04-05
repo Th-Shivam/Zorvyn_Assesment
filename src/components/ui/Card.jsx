@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 // Defines a very basic Card container replicating the premium drop-shadow designs
 
@@ -11,4 +12,9 @@ export const Card = ({ children, className = '', ...props }) => {
       {children}
     </div>
   );
+};
+
+Card.propTypes = {
+  children: PropTypes.node.isRequired,
+  className: PropTypes.string,
 };

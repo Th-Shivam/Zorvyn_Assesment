@@ -1,13 +1,16 @@
 import React, { forwardRef } from 'react';
+import PropTypes from 'prop-types';
 
 export const Input = forwardRef(({ 
   icon, 
   iconPosition = 'left',
   label, 
+  id,
   className = '', 
   containerClassName = '',
   ...props 
 }, ref) => {
+  const inputId = id || props.name || label?.toLowerCase().replace(/\s+/g, '-');
   
   const baseInputClasses = "w-full bg-surface-container-low border border-slate-200/20 rounded-2xl text-sm font-medium focus:ring-4 focus:ring-primary/10 focus:border-primary/20 focus:bg-white transition-all duration-200 shadow-inner placeholder:text-slate-300";
   
@@ -19,7 +22,7 @@ export const Input = forwardRef(({
   return (
     <div className={containerClassName}>
       {label && (
-        <label className="block text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-2">
+        <label htmlFor={inputId} className="block text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-2">
           {label}
         </label>
       )}
@@ -30,6 +33,7 @@ export const Input = forwardRef(({
           </span>
         )}
         <input 
+          id={inputId}
           ref={ref}
           className={`${baseInputClasses} py-4 ${paddingClass} ${className}`.trim()} 
           {...props} 
@@ -45,3 +49,12 @@ export const Input = forwardRef(({
 });
 
 Input.displayName = 'Input';
+
+Input.propTypes = {
+  icon: PropTypes.node,
+  iconPosition: PropTypes.oneOf(['left', 'right']),
+  label: PropTypes.string,
+  id: PropTypes.string,
+  className: PropTypes.string,
+  containerClassName: PropTypes.string,
+};
