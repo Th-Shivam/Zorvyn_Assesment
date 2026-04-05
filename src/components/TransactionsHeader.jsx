@@ -1,9 +1,11 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { useRole } from '../context/RoleContext';
 import { Button } from './ui/Button';
 
 const TransactionsHeader = ({ 
   onAddClick, 
+  onExport,
   searchQuery, setSearchQuery,
   typeFilter, setTypeFilter,
   dateFilter, setDateFilter,
@@ -17,12 +19,18 @@ const TransactionsHeader = ({
           <h2 className="text-4xl font-bold tracking-tight text-on-background">Transactions</h2>
           <p className="text-on-secondary-container font-medium">Track, filter, and manage your financial activity {role === 'viewer' && <span className="ml-2 text-primary font-bold text-xs bg-primary/10 px-2 py-0.5 rounded-full uppercase tracking-widest">Viewer Mode</span>}</p>
         </div>
-        {role === 'admin' && (
-          <Button onClick={onAddClick} size="md">
-            <span className="material-symbols-outlined text-[20px]">add</span>
-            Add Entry
+        <div className="flex flex-wrap items-center gap-3">
+          <Button variant="outline" size="md" onClick={onExport}>
+            <span className="material-symbols-outlined text-[18px]">download</span>
+            Export CSV
           </Button>
-        )}
+          {role === 'admin' && (
+            <Button onClick={onAddClick} size="md">
+              <span className="material-symbols-outlined text-[20px]">add</span>
+              Add Entry
+            </Button>
+          )}
+        </div>
       </section>
 
       {/* Filters Bar */}
@@ -47,9 +55,10 @@ const TransactionsHeader = ({
             onChange={(e) => setDateFilter(e.target.value)}
             className="w-full bg-surface-container-lowest border border-outline-variant/30 rounded-xl px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-primary/10 transition-all appearance-none cursor-pointer"
           >
+            <option value="All time">All time</option>
             <option value="This month">This month</option>
             <option value="Last month">Last month</option>
-            <option value="Custom range">Custom range</option>
+            <option value="Last 3 months">Last 3 months</option>
           </select>
           <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">calendar_today</span>
         </div>
@@ -79,6 +88,19 @@ const TransactionsHeader = ({
       </section>
     </>
   );
+};
+
+TransactionsHeader.propTypes = {
+  onAddClick: PropTypes.func.isRequired,
+  onExport: PropTypes.func.isRequired,
+  searchQuery: PropTypes.string.isRequired,
+  setSearchQuery: PropTypes.func.isRequired,
+  typeFilter: PropTypes.string.isRequired,
+  setTypeFilter: PropTypes.func.isRequired,
+  dateFilter: PropTypes.string.isRequired,
+  setDateFilter: PropTypes.func.isRequired,
+  sortConfig: PropTypes.string.isRequired,
+  setSortConfig: PropTypes.func.isRequired,
 };
 
 export default TransactionsHeader;
