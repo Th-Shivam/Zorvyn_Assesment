@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
+import PropTypes from 'prop-types';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -11,10 +12,15 @@ import {
   ArcElement
 } from 'chart.js';
 import { Line, Doughnut } from 'react-chartjs-2';
-import { dashboardData } from '../data/mockData';
 import { useTransactions } from '../context/TransactionsContext';
 import { Card } from './ui/Card';
 import { Button } from './ui/Button';
+import {
+  formatCurrency,
+  getCategoryColor,
+  getTrendData,
+  getTransactionMetrics,
+} from '../utils/transactionUtils';
 
 ChartJS.register(
   CategoryScale,
@@ -29,46 +35,40 @@ ChartJS.register(
 
 const ChartsSection = () => {
   const { transactions } = useTransactions();
-  const { balanceTrend } = dashboardData.charts;
+  const [selectedRange, setSelectedRange] = useState('30D');
+  const metrics = useMemo(() => getTransactionMetrics(transactions), [transactions]);
+  const selectedTrend = useMemo(
+    () => getTrendData(transactions, selectedRange),
+    [transactions, selectedRange]
+  );
+  const dynamicCategories = useMemo(() => {
+    return Object.entries(metrics.categoryTotals)
+      .map(([name, amount]) => ({
+        name,
+        amount,
+        percentage: metrics.totalExpense > 0 ? Math.round((amount / metrics.totalExpense) * 100) : 0,
+        color: getCategoryColor(name),
+      }))
+      .sort((first, second) => second.amount - first.amount);
+  }, [metrics.categoryTotals, metrics.totalExpense]);
+  const chartRangeOptions = ['30D', '6M', '1Y'];
+  const lineBounds = useMemo(() => {
+    const values = selectedTrend.data.length > 0 ? selectedTrend.data : [0];
+    const min = Math.min(...values, 0);
+    const max = Math.max(...values, 0);
+    if (min === max) {
+      return { min: min - 1000, max: max + 1000 };
+    }
+    const padding = Math.max((max - min) * 0.15, 1000);
+    return { min: min - padding, max: max + padding };
+  }, [selectedTrend.data]);
 
-  // Dynamically calculate spending by category for the Doughnut Chart
-  const expenseTransactions = transactions.filter(tx => tx.type === 'Expense');
-  const totalExpense = expenseTransactions.reduce((acc, tx) => acc + tx.amount, 0);
-  
-  const categorySums = {};
-  expenseTransactions.forEach(tx => {
-    const val = tx.amount;
-    categorySums[tx.categoryName] = (categorySums[tx.categoryName] || 0) + val;
-  });
-
-  const colorMap = {
-    'Shopping': '#4f46e5',
-    'Food & Dining': '#e11d48',
-    'Dining': '#e11d48',
-    'Bills & Utilities': '#0d9488',
-    'Utilities': '#0d9488',
-    'Travel': '#ea580c',
-    'Subscriptions': '#8b5cf6',
-    'Electronics': '#8b5cf6',
-    'Entertainment': '#ec4899',
-    'Personal Care': '#06b6d4',
-    'Other': '#64748b'
-  };
-
-  const dynamicCategories = Object.keys(categorySums).map(catName => ({
-    name: catName,
-    amount: categorySums[catName],
-    percentage: totalExpense > 0 ? Math.round((categorySums[catName] / totalExpense) * 100) : 0,
-    color: colorMap[catName] || colorMap['Other']
-  })).sort((a,b) => b.percentage - a.percentage);
-
-  // Enhance line chart with gradient and specific tooltip formatting
-  const lineData = {
-    labels: balanceTrend.dates,
+  const lineData = useMemo(() => ({
+    labels: selectedTrend.labels,
     datasets: [
       {
         fill: true,
-        data: balanceTrend.data,
+        data: selectedTrend.data,
         borderColor: '#4f46e5',
         borderWidth: 3,
         tension: 0.4,
@@ -87,9 +87,9 @@ const ChartsSection = () => {
         },
       },
     ],
-  };
+  }), [selectedTrend]);
 
-  const lineOptions = {
+  const lineOptions = useMemo(() => ({
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
@@ -106,32 +106,32 @@ const ChartsSection = () => {
         bodyFont: { size: 16, weight: 'bold', family: 'Inter' },
         callbacks: {
           label: function(context) {
-            return `₹${context.raw.toLocaleString()}`;
+            return formatCurrency(context.raw);
           }
         }
       }
     },
     scales: {
-      y: { display: false, min: 250000, max: 450000 },
+      y: { display: false, min: lineBounds.min, max: lineBounds.max },
       x: { display: false }
     },
     layout: {
       padding: { top: 20, bottom: 20, left: 10, right: 10 }
     }
-  };
+  }), [lineBounds.max, lineBounds.min]);
 
-  const doughnutData = {
+  const doughnutData = useMemo(() => ({
     labels: dynamicCategories.map(c => c.name),
     datasets: [
       {
-        data: dynamicCategories.map(c => c.percentage),
+        data: dynamicCategories.map(c => c.amount),
         backgroundColor: dynamicCategories.map(c => c.color),
         borderWidth: 0,
         hoverOffset: 10,
         cutout: '75%'
       }
     ]
-  };
+  }), [dynamicCategories]);
 
   const doughnutOptions = {
     responsive: true,
@@ -141,7 +141,9 @@ const ChartsSection = () => {
       tooltip: {
         callbacks: {
           label: function(context) {
-            return ` ${context.raw}%`;
+            const amount = dynamicCategories[context.dataIndex]?.amount || 0;
+            const percentage = dynamicCategories[context.dataIndex]?.percentage || 0;
+            return `${formatCurrency(amount)} (${percentage}%)`;
           }
         }
       }
@@ -155,29 +157,30 @@ const ChartsSection = () => {
         <div className="flex justify-between items-center mb-10">
           <div>
             <h4 className="text-xl font-bold text-slate-900">Wealth Trajectory</h4>
-            <p className="text-sm text-slate-400 mt-1">Growth overview over the last 30 days</p>
+            <p className="text-sm text-slate-400 mt-1">Net cash movement built from actual transactions</p>
           </div>
           <div className="flex bg-slate-50 p-1 rounded-xl border border-slate-100">
-            <Button size="sm" className="bg-white shadow-sm !text-primary hover:!text-primary">
-              30D
-            </Button>
-            <Button size="sm" variant="ghost">
-              6M
-            </Button>
-            <Button size="sm" variant="ghost">
-              1Y
-            </Button>
+            {chartRangeOptions.map((range) => (
+              <Button
+                key={range}
+                type="button"
+                size="sm"
+                variant={selectedRange === range ? 'secondary' : 'ghost'}
+                className={selectedRange === range ? 'bg-white shadow-sm !text-primary hover:!text-primary' : ''}
+                onClick={() => setSelectedRange(range)}
+              >
+                {range}
+              </Button>
+            ))}
           </div>
         </div>
         
         <div className="relative flex-1 min-h-[300px] w-full">
-          {/* Subtle grid lines background overlay behind charting engine if needed, but omitted for clean minimalist look */}
           <Line data={lineData} options={lineOptions} />
         </div>
         
-        {/* Custom manual labels matching HTML */}
         <div className="flex justify-between mt-8 px-2">
-          {balanceTrend.dates.map((date, index) => (
+          {selectedTrend.labels.map((date, index) => (
             <span key={index} className="text-[10px] font-bold text-slate-300 uppercase tracking-[0.2em]">
               {date}
             </span>
@@ -193,7 +196,7 @@ const ChartsSection = () => {
             <Doughnut data={doughnutData} options={doughnutOptions} />
           </div>
           <div className="absolute text-center z-10 pointer-events-none">
-            <p className="text-3xl font-extrabold text-slate-900">₹{totalExpense > 0 ? (totalExpense/1000).toFixed(1) + 'k' : '0'}</p>
+            <p className="text-3xl font-extrabold text-slate-900">{formatCurrency(metrics.totalExpense)}</p>
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
               Total Out
             </p>
@@ -220,5 +223,7 @@ const ChartsSection = () => {
     </section>
   );
 };
+
+ChartsSection.propTypes = {};
 
 export default ChartsSection;
