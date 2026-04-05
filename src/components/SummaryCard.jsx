@@ -1,23 +1,21 @@
-import React from 'react';
-import { dashboardData } from '../data/mockData';
+import React, { useMemo } from 'react';
+import PropTypes from 'prop-types';
 import { useTransactions } from '../context/TransactionsContext';
 import { Card } from './ui/Card';
+import {
+  formatCurrency,
+  getTransactionMetrics,
+} from '../utils/transactionUtils';
 
 const SummaryCards = () => {
   const { transactions } = useTransactions();
-  const { balance, income, spend } = dashboardData.metrics;
-
-  // Calculate dynamic data based on historical mock scale
-  const rawIncome = transactions.reduce((acc, tx) => tx.type === 'Income' ? acc + tx.amount : acc, 0);
-  const rawSpend = transactions.reduce((acc, tx) => tx.type === 'Expense' ? acc + tx.amount : acc, 0);
-  
-  // Create a base balance to represent history not visibly shown in the recent list
-  const baseBalance = 1322500; 
-  const rawBalance = baseBalance + rawIncome - rawSpend;
-
-  const dynamicIncome = rawIncome.toLocaleString('en-IN');
-  const dynamicSpend = rawSpend.toLocaleString('en-IN');
-  const dynamicBalance = rawBalance.toLocaleString('en-IN');
+  const metrics = useMemo(() => getTransactionMetrics(transactions), [transactions]);
+  const incomeDelta = metrics.currentMonthIncome - metrics.previousMonthIncome;
+  const spendDeltaPercent = metrics.previousMonthExpense > 0
+    ? ((metrics.currentMonthExpense - metrics.previousMonthExpense) / metrics.previousMonthExpense) * 100
+    : 0;
+  const balanceReference = Math.max(metrics.totalIncome, metrics.totalExpense, Math.abs(metrics.netBalance), 1);
+  const balancePercent = Math.max(0, Math.min(100, Math.round((Math.abs(metrics.netBalance) / balanceReference) * 100)));
 
   return (
     <section className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-12">
@@ -31,27 +29,28 @@ const SummaryCards = () => {
                 Total Available Balance
               </span>
               <div className="px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-white text-[11px] font-bold flex items-center gap-1.5 border border-white/10">
-                <span className="material-symbols-outlined text-[14px]">trending_up</span>
-                {balance.change}
+                <span className="material-symbols-outlined icon-filled text-[14px]">trending_up</span>
+                {balancePercent}% net retained
               </div>
             </div>
             <div className="flex items-baseline gap-1 mb-8">
               <span className="text-6xl font-extrabold tracking-tighter text-white drop-shadow-sm">
-                ₹{dynamicBalance}
+                {formatCurrency(metrics.netBalance)}
               </span>
-              <span className="text-white/40 text-xl font-medium">{balance.decimals}</span>
+              <span className="text-white/40 text-xl font-medium">net</span>
             </div>
           </div>
           <div className="space-y-4">
             <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-white/70">
-              <span>Savings Milestone</span>
+              <span>Lifetime Flow</span>
               <span>
-                {balance.milestone.percent}% of {balance.milestone.goal} goal
+                {formatCurrency(metrics.totalIncome)} in / {formatCurrency(metrics.totalExpense)} out
               </span>
             </div>
             <div className="h-2.5 w-full bg-white/10 rounded-full overflow-hidden border border-white/5">
               <div
-                className="h-full bg-gradient-to-r from-white to-indigo-100 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.4)] progress-fill-animate"
+                className="h-full bg-gradient-to-r from-white to-indigo-100 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.4)] transition-all duration-700"
+                style={{ width: `${balancePercent}%` }}
               ></div>
             </div>
           </div>
@@ -65,7 +64,7 @@ const SummaryCards = () => {
             <span className="material-symbols-outlined text-2xl">arrow_downward</span>
           </div>
           <span className="text-tertiary text-[10px] font-bold px-2 py-1 bg-tertiary/10 rounded-lg">
-            {income.todayChange}
+            {incomeDelta >= 0 ? `+₹${incomeDelta.toLocaleString('en-IN')}` : `-₹${Math.abs(incomeDelta).toLocaleString('en-IN')}`} vs goal
           </span>
         </div>
         <div>
@@ -73,12 +72,12 @@ const SummaryCards = () => {
             Monthly Income
           </p>
           <h3 className="text-4xl font-extrabold tracking-tight text-slate-900">
-            ₹{dynamicIncome}
+            {formatCurrency(metrics.currentMonthIncome)}
           </h3>
         </div>
         <div className="mt-8 border-t border-slate-100 pt-5 flex justify-between items-center">
-          <span className="text-[11px] text-slate-400 font-bold uppercase tracking-tighter">Budget Avg</span>
-          <span className="text-sm font-bold text-slate-900">{income.budgetAvg}</span>
+          <span className="text-[11px] text-slate-400 font-bold uppercase tracking-tighter">Last Month</span>
+          <span className="text-sm font-bold text-slate-900">{formatCurrency(metrics.previousMonthIncome)}</span>
         </div>
       </Card>
 
@@ -89,7 +88,7 @@ const SummaryCards = () => {
             <span className="material-symbols-outlined text-2xl">arrow_upward</span>
           </div>
           <span className="text-error text-[10px] font-bold px-2 py-1 bg-error/10 rounded-lg">
-            {spend.budgetDiff}
+            {metrics.previousMonthExpense > 0 ? `${spendDeltaPercent >= 0 ? '+' : ''}${spendDeltaPercent.toFixed(1)}% vs last month` : 'No prior month'}
           </span>
         </div>
         <div>
@@ -97,16 +96,18 @@ const SummaryCards = () => {
             Monthly Spend
           </p>
           <h3 className="text-4xl font-extrabold tracking-tight text-slate-900">
-            ₹{dynamicSpend}
+            {formatCurrency(metrics.currentMonthExpense)}
           </h3>
         </div>
         <div className="mt-8 border-t border-slate-100 pt-5 flex justify-between items-center">
           <span className="text-[11px] text-slate-400 font-bold uppercase tracking-tighter">Prev. Month</span>
-          <span className="text-sm font-bold text-slate-900">{spend.prevMonth}</span>
+          <span className="text-sm font-bold text-slate-900">{formatCurrency(metrics.previousMonthExpense)}</span>
         </div>
       </Card>
     </section>
   );
 };
+
+SummaryCards.propTypes = {};
 
 export default SummaryCards;
