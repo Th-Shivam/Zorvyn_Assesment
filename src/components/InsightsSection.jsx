@@ -1,8 +1,48 @@
-import React from 'react';
-import { dashboardData } from '../data/mockData';
+import React, { useMemo } from 'react';
+import PropTypes from 'prop-types';
+import { useTransactions } from '../context/TransactionsContext';
+import { Card } from './ui/Card';
+import {
+  formatCurrency,
+  getMonthlyComparison,
+  getTransactionMetrics,
+} from '../utils/transactionUtils';
 
 const InsightsSection = () => {
-  const { insights } = dashboardData;
+  const { transactions } = useTransactions();
+  const metrics = useMemo(() => getTransactionMetrics(transactions), [transactions]);
+  const monthlyComparison = useMemo(() => getMonthlyComparison(transactions), [transactions]);
+  const expenseDifference = monthlyComparison.current.expense - monthlyComparison.previous.expense;
+  const savingsDifference = metrics.monthlyNet - metrics.previousMonthlyNet;
+  const insights = [
+    {
+      id: 1,
+      type: 'warning',
+      icon: 'pie_chart',
+      title: metrics.topCategory !== 'N/A' ? `${metrics.topCategory} is your largest spend bucket` : 'No spending category yet',
+      description: metrics.topCategory !== 'N/A'
+        ? `${formatCurrency(metrics.topCategoryAmount)} has gone to ${metrics.topCategory}, making it your largest expense category.`
+        : 'Add expense transactions to unlock category-level insights.',
+    },
+    {
+      id: 2,
+      type: 'alert',
+      icon: 'bar_chart',
+      title: monthlyComparison.previous.expense > 0 ? 'Monthly expense comparison is available' : 'Monthly comparison needs more data',
+      description: monthlyComparison.previous.expense > 0
+        ? `${monthlyComparison.current.label} expenses are ${expenseDifference >= 0 ? 'up' : 'down'} ${formatCurrency(Math.abs(expenseDifference))} versus ${monthlyComparison.previous.label}.`
+        : 'You need transactions across two different months to compare spending trends.',
+    },
+    {
+      id: 3,
+      type: 'reward',
+      icon: 'savings',
+      title: metrics.totalIncome > 0 ? `Savings rate is ${metrics.savingsRate}%` : 'Income data is missing',
+      description: metrics.totalIncome > 0
+        ? `Net savings for ${monthlyComparison.current.label} are ${formatCurrency(metrics.monthlyNet)}, ${savingsDifference >= 0 ? 'up' : 'down'} ${formatCurrency(Math.abs(savingsDifference))} from last month.`
+        : 'Add income entries to measure savings rate and month-over-month performance.',
+    },
+  ];
 
   const getStyleForInsight = (type) => {
     switch (type) {
@@ -38,10 +78,10 @@ const InsightsSection = () => {
   };
 
   return (
-    <div className="bg-white p-10 rounded-3xl shadow-premium premium-card flex flex-col">
+    <Card className="!p-10">
       <div className="flex items-center gap-3 mb-12">
         <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-          <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
+          <span className="material-symbols-outlined icon-filled">
             auto_awesome
           </span>
         </div>
@@ -61,21 +101,16 @@ const InsightsSection = () => {
               </div>
               <div>
                 <p className="text-base font-bold text-slate-900">{insight.title}</p>
-                <p 
-                  className="text-sm text-slate-400 mt-1.5 leading-relaxed"
-                  dangerouslySetInnerHTML={{ __html: insight.description }}
-                ></p>
+                <p className="text-sm text-slate-400 mt-1.5 leading-relaxed">{insight.description}</p>
               </div>
             </div>
           );
         })}
       </div>
-      
-      <button className="mt-12 py-4 w-full bg-slate-50 text-primary text-[11px] font-bold uppercase tracking-[0.2em] rounded-2xl hover:bg-primary hover:text-white transition-standard border border-slate-100 hover:border-transparent active:scale-95">
-        Analyze All Habits
-      </button>
-    </div>
+    </Card>
   );
 };
+
+InsightsSection.propTypes = {};
 
 export default InsightsSection;
